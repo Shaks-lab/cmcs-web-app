@@ -1,0 +1,147 @@
+﻿@model CMCS_ST10026321.Models.ClaimDtocs
+
+<div class="container mt-5">
+    <div class="card shadow-lg rounded-3 p-4">
+        <div class="card-header bg-success text-white fw-bold">
+            Add a New Claim
+        </div>
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+            <form id="claimForm" method="post" enctype="multipart/form-data">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label">Name</label>
+                        <input type="text" asp-for="Name" class="form-control" placeholder="Enter your name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Surname" class="form-label">Surname</label>
+                        <input type="text" asp-for="Surname" class="form-control" placeholder="Enter your surname" />
+                        <span asp-validation-for="Surname" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-3">
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input type="email" asp-for="Email" class="form-control" placeholder="Enter your email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="HoursWorked" class="form-label">Hours Worked</label>
+                        <input type="number" id="hoursWorked" asp-for="HoursWorked" class="form-control" min="1" max="200" />
+                        <span asp-validation-for="HoursWorked" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="HourlyRate" class="form-label">Hourly Rate</label>
+                        <input type="number" id="hourlyRate" asp-for="HourlyRate" class="form-control" min="50" max="500" step="0.01" />
+                        <span asp-validation-for="HourlyRate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Auto-calculated Total Amount Display -->
+                <div class="row g-3 mt-3">
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">Calculated Total Amount</h6>
+                                <h4 class="text-success" id="totalAmountDisplay">R 0.00</h4>
+                                <input type="hidden" id="calculatedTotal" name="CalculatedTotal" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <label asp-for="Notes" class="form-label">Additional Notes</label>
+                    <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Enter any notes"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+
+                <div class="mt-3">
+                    <label asp-for="SupportingDocumentPath" class="form-label">Upload Document</label>
+                    <input type="file" name="file" class="form-control" id="fileUpload" required />
+                    <small class="form-text text-muted">Supported formats: PDF, DOC, DOCX, JPEG, PNG (Max: 5MB)</small>
+                    <span id="fileValidation" class="text-danger"></span>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg px-4" id="submitBtn">
+                        <i class="bi bi-send-fill me-2"></i> Submit Claim
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Auto-calculation function
+            function calculateTotal() {
+                const hours = parseFloat($('#hoursWorked').val()) || 0;
+                const rate = parseFloat($('#hourlyRate').val()) || 0;
+                const total = hours * rate;
+
+                $('#totalAmountDisplay').text('R ' + total.toFixed(2));
+                $('#calculatedTotal').val(total);
+
+                // Highlight if amount exceeds auto-approval threshold
+                if (total > 5000) {
+                    $('#totalAmountDisplay').removeClass('text-success').addClass('text-warning');
+                } else {
+                    $('#totalAmountDisplay').removeClass('text-warning').addClass('text-success');
+                }
+            }
+
+            // Real-time calculation
+            $('#hoursWorked, #hourlyRate').on('input', calculateTotal);
+
+            // File validation
+            $('#fileUpload').on('change', function() {
+                const file = this.files[0];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                const allowedTypes = ['application/pdf', 'application/msword',
+                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                    'image/jpeg', 'image/png'];
+
+                if (file) {
+                    if (file.size > maxSize) {
+                        $('#fileValidation').text('File size must be less than 5MB');
+                        this.value = '';
+                    } else if (!allowedTypes.includes(file.type)) {
+                        $('#fileValidation').text('Please upload a valid document type (PDF, DOC, DOCX, JPEG, PNG)');
+                        this.value = '';
+                    } else {
+                        $('#fileValidation').text('');
+                    }
+                }
+            });
+
+            // Form validation before submission
+            $('#claimForm').on('submit', function(e) {
+                const hours = parseFloat($('#hoursWorked').val());
+                const rate = parseFloat($('#hourlyRate').val());
+
+                if (hours < 1 || hours > 200) {
+                    alert('Hours worked must be between 1 and 200');
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (rate < 50 || rate > 500) {
+                    alert('Hourly rate must be between R50 and R500');
+                    e.preventDefault();
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Initial calculation
+            calculateTotal();
+        });
+    </script>
+}

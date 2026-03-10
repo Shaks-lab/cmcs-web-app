@@ -1,0 +1,176 @@
+﻿@model CMCS_ST10026321.Models.Claim
+
+@{
+    ViewData["Title"] = "Claim Details";
+}
+
+<style>
+    .detail-card {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .detail-header {
+        background: linear-gradient(135deg, #13294b, #1e3a6b);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        padding: 1.5rem;
+    }
+
+    .detail-body {
+        padding: 2rem;
+    }
+
+    .info-row {
+        display: flex;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 1rem 0;
+    }
+
+    .info-label {
+        font-weight: 600;
+        width: 180px;
+        color: #1e3a6b;
+    }
+
+    .info-value {
+        flex: 1;
+    }
+
+    .status-badge {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+    }
+
+    .document-link {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 10px;
+        border: 2px dashed #1e3a6b;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+        .document-link:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card detail-card">
+                <div class="detail-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0"><i class="bi bi-file-text me-2"></i>Claim Details #@Model.Id</h2>
+                        <span class="status-badge @(Model.Status == "Approved" || Model.Status == "Auto-Approved" ? "bg-success" :
+                                                                                 Model.Status == "Rejected" ? "bg-danger" : "bg-warning")">
+                            @Model.Status
+                        </span>
+                    </div>
+                </div>
+
+                <div class="detail-body">
+                    <div class="info-row">
+                        <div class="info-label"><i class="bi bi-person me-2"></i>Lecturer Name:</div>
+                        <div class="info-value">@Model.Name @Model.Surname</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label"><i class="bi bi-envelope me-2"></i>Email:</div>
+                        <div class="info-value">@Model.Email</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label"><i class="bi bi-clock me-2"></i>Hours Worked:</div>
+                        <div class="info-value">@Model.HoursWorked</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label"><i class="bi bi-currency-exchange me-2"></i>Hourly Rate:</div>
+                        <div class="info-value">R @Model.HourlyRate.ToString("N2")</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label"><i class="bi bi-calculator me-2"></i>Total Amount:</div>
+                        <div class="info-value fw-bold text-success">R @Model.TotalAmount.ToString("N2")</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label"><i class="bi bi-calendar me-2"></i>Submitted Date:</div>
+                        <div class="info-value">@Model.SubmittedDate.ToString("dd MMMM yyyy HH:mm")</div>
+                    </div>
+
+                    @if (Model.ProcessedDate.HasValue)
+                    {
+                        <div class="info-row">
+                            <div class="info-label"><i class="bi bi-calendar-check me-2"></i>Processed Date:</div>
+                            <div class="info-value">@Model.ProcessedDate.Value.ToString("dd MMMM yyyy HH:mm")</div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label"><i class="bi bi-person-badge me-2"></i>Processed By:</div>
+                            <div class="info-value">@Model.ProcessedBy</div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="info-row">
+                            <div class="info-label"><i class="bi bi-chat-text me-2"></i>Notes:</div>
+                            <div class="info-value">@Model.Notes</div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.SupportingDocumentPath))
+                    {
+                        <div class="mt-4">
+                            <h5><i class="bi bi-paperclip me-2"></i>Supporting Document</h5>
+                            <div class="document-link mt-2">
+                                <a href="@Model.SupportingDocumentPath" target="_blank" class="text-decoration-none">
+                                    <i class="bi bi-file-earmark-text me-2" style="font-size: 2rem;"></i><br />
+                                    View Document
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="mt-4 d-flex gap-2">
+                        <a asp-action="Cam" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to List
+                        </a>
+
+                        @if (Model.Status == "Pending Approval")
+                        {
+                            <form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success"
+                                        onclick="return confirm('Approve this claim?')">
+                                    <i class="bi bi-check-circle me-2"></i>Approve
+                                </button>
+                            </form>
+
+                            <form asp-action="Reject" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger"
+                                        onclick="return confirm('Reject this claim?')">
+                                    <i class="bi bi-x-circle me-2"></i>Reject
+                                </button>
+                            </form>
+                        }
+
+                        @if (Model.Status == "Approved" || Model.Status == "Auto-Approved")
+                        {
+                            <a asp-controller="HR" asp-action="GenerateInvoice" asp-route-id="@Model.Id"
+                               class="btn btn-primary">
+                                <i class="bi bi-receipt me-2"></i>Generate Invoice
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

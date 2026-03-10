@@ -1,0 +1,340 @@
+﻿@model List<CMCS_ST10026321.Models.Claim>
+
+@{
+    ViewData["Title"] = "HR Dashboard";
+}
+
+<!-- Add this CSS for better button styling -->
+<style>
+    .btn-action {
+        transition: all 0.2s;
+        margin: 0 2px;
+    }
+
+        .btn-action:hover {
+            transform: scale(1.05);
+        }
+
+    .processing-btn {
+        opacity: 0.7;
+        cursor: wait;
+    }
+</style>
+
+<div class="container mt-4">
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-lg rounded-3">
+        <div class="card-header bg-success text-white fw-bold d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-person-badge me-2"></i>HR Dashboard - Claim Management</span>
+            <div>
+                <!-- Run Automation Button (with AJAX) -->
+                <button type="button" id="runAutomationBtn" class="btn btn-warning btn-sm me-2">
+                    <i class="bi bi-gear-fill me-1"></i>
+                    <span class="button-text">Run Automation</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+
+                <!-- Generate Report Button (with AJAX) -->
+                <button type="button" id="generateReportBtn" class="btn btn-info btn-sm me-2">
+                    <i class="bi bi-file-earmark-text me-1"></i>
+                    <span class="button-text">Generate Report</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+
+                <a asp-action="DownloadSummary" class="btn btn-success btn-sm">
+                    <i class="bi bi-download me-1"></i> Export CSV
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-primary h-100">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">@Model.Count</h4>
+                            <p class="card-text">Total Claims</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-success h-100">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">@Model.Count(c => c.Status == "Approved" || c.Status == "Auto-Approved")</h4>
+                            <p class="card-text">Approved</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-warning h-100">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">@Model.Count(c => c.Status == "Pending Approval")</h4>
+                            <p class="card-text">Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-danger h-100">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">@Model.Count(c => c.Status == "Rejected")</h4>
+                            <p class="card-text">Rejected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Claims Table -->
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle" id="claimsTable">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Claim ID</th>
+                            <th>Lecturer Name</th>
+                            <th>Email</th>
+                            <th>Hours</th>
+                            <th>Rate</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var claim in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@claim.Id</td>
+                                <td>@claim.Name @claim.Surname</td>
+                                <td>@claim.Email</td>
+                                <td class="text-center">@claim.HoursWorked</td>
+                                <td class="text-end">R @claim.HourlyRate.ToString("N2")</td>
+                                <td class="text-end fw-bold text-success">R @claim.TotalAmount.ToString("N2")</td>
+                                <td class="text-center">
+                                    @if (claim.Status == "Approved" || claim.Status == "Auto-Approved")
+                                    {
+                                        <span class="badge bg-success">@claim.Status</span>
+                                    }
+                                    else if (claim.Status == "Rejected")
+                                    {
+                                        <span class="badge bg-danger">Rejected</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Pending</span>
+                                    }
+                                </td>
+                                <td class="text-center">@claim.SubmittedDate.ToString("yyyy-MM-dd")</td>
+                                <td class="text-center">
+                                    <a asp-controller="Claim" asp-action="Details" asp-route-id="@claim.Id"
+                                       class="btn btn-outline-info btn-sm btn-action"
+                                       title="View Details">
+                                        <i class="bi bi-eye"></i> Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#claimsTable').DataTable({
+                pageLength: 25,
+                order: [[0, 'desc']],
+                responsive: true
+            });
+
+            // Run Automation Button
+            $('#runAutomationBtn').click(function() {
+                var btn = $(this);
+                var buttonText = btn.find('.button-text');
+                var spinner = btn.find('.spinner-border');
+
+                // Disable button and show spinner
+                btn.prop('disabled', true);
+                buttonText.text('Processing...');
+                spinner.removeClass('d-none');
+
+                // Get anti-forgery token
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                // Make AJAX call
+                $.ajax({
+                    url: '@Url.Action("AutomateClaims", "HR")',
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message
+                            showAlert('success', response.message || 'Automation completed successfully!');
+
+                            // Reload page after 2 seconds
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            // Show error message
+                            showAlert('danger', response.message || 'Automation failed');
+
+                            // Reset button
+                            btn.prop('disabled', false);
+                            buttonText.text('Run Automation');
+                            spinner.addClass('d-none');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error details:', xhr.responseText);
+
+                        var errorMsg = 'Error during automation';
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            errorMsg = response.message || response.error || errorMsg;
+                        } catch(e) {
+                            errorMsg = xhr.status + ': ' + xhr.statusText;
+                        }
+
+                        showAlert('danger', errorMsg);
+
+                        // Reset button
+                        btn.prop('disabled', false);
+                        buttonText.text('Run Automation');
+                        spinner.addClass('d-none');
+                    }
+                });
+            });
+
+            // Generate Report Button
+            $('#generateReportBtn').click(function() {
+                var btn = $(this);
+                var buttonText = btn.find('.button-text');
+                var spinner = btn.find('.spinner-border');
+
+                // Disable button and show spinner
+                btn.prop('disabled', true);
+                buttonText.text('Generating...');
+                spinner.removeClass('d-none');
+
+                // Get anti-forgery token
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                // Make AJAX call
+                $.ajax({
+                    url: '@Url.Action("GenerateMonthlyReport", "HR")',
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: token
+                    },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function(data, status, xhr) {
+                        var contentType = xhr.getResponseHeader('Content-Type');
+
+                        if (contentType === 'text/plain' || contentType === 'application/octet-stream') {
+                            // It's a file - download it
+                            var blob = new Blob([data], { type: contentType });
+                            var downloadUrl = URL.createObjectURL(blob);
+
+                            var contentDisposition = xhr.getResponseHeader('Content-Disposition');
+                            var fileName = 'MonthlyReport.txt';
+                            if (contentDisposition) {
+                                var match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                                if (match && match[1]) {
+                                    fileName = match[1].replace(/['"]/g, '');
+                                }
+                            }
+
+                            var a = document.createElement('a');
+                            a.href = downloadUrl;
+                            a.download = fileName;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(downloadUrl);
+
+                            showAlert('success', 'Report generated and downloaded successfully!');
+                        } else {
+                            // Handle JSON response
+                            var reader = new FileReader();
+                            reader.onload = function() {
+                                try {
+                                    var response = JSON.parse(reader.result);
+                                    if (response.success) {
+                                        showAlert('success', response.message || 'Report generated successfully!');
+                                    } else {
+                                        showAlert('danger', response.message || 'Error generating report');
+                                    }
+                                } catch(e) {
+                                    showAlert('success', 'Report generated successfully!');
+                                }
+                            };
+                            reader.readAsText(data);
+                        }
+
+                        // Reset button
+                        btn.prop('disabled', false);
+                        buttonText.text('Generate Report');
+                        spinner.addClass('d-none');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error details:', xhr.responseText);
+
+                        showAlert('danger', 'Error generating report: ' + error);
+
+                        // Reset button
+                        btn.prop('disabled', false);
+                        buttonText.text('Generate Report');
+                        spinner.addClass('d-none');
+                    }
+                });
+            });
+
+            // Helper function to show alerts
+            function showAlert(type, message) {
+                var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                    '<i class="bi bi-' + (type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill') + ' me-2"></i>' +
+                    message +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                    '</div>';
+
+                $('.container.mt-4').prepend(alertHtml);
+
+                // Auto-hide after 5 seconds
+                setTimeout(function() {
+                    $('.alert').fadeOut('slow', function() {
+                        $(this).remove();
+                    });
+                }, 5000);
+            }
+        });
+    </script>
+}
+
+<!-- Add anti-forgery token for AJAX calls -->
+@Html.AntiForgeryToken()

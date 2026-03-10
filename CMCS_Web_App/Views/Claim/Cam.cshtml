@@ -1,0 +1,64 @@
+﻿@model IEnumerable<CMCS_ST10026321.Models.Claim>
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h3 class="fw-bold text-success">Contractors and Managers</h3>
+        <p class="text-muted">Review submitted claims and approve or reject</p>
+    </div>
+
+    <div class="card shadow-lg rounded-3">
+        <div class="card-body">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-header-custom text-center">
+                    <tr>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Hours Worked</th>
+                        <th>Hourly Rate</th>
+                        <th>Notes</th>
+                        <th>Total Amount</th>
+                        <th>Approval</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var claim in Model)
+                        {
+                            <tr>
+                                <td>@claim.Name</td>
+                                <td>@claim.Surname</td>
+                                <td>@claim.HoursWorked</td>
+                                <td>R @claim.HourlyRate</td>
+                                <td>@claim.Notes</td>
+                                <td class="fw-bold text-success">R @claim.TotalAmount</td>
+                                <td class="text-center">
+                                    <form asp-controller="Claim" method="post">
+                                        <input type="hidden" name="id" value="@claim.Id" />
+
+                                        <button type="submit" formaction="@Url.Action("Approve", "Claim")" class="btn btn-sm btn-success me-2"
+                                                onclick="return confirm('Are you sure you want to approve this claim?');">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
+
+                                        <button type="submit" formaction="@Url.Action("Reject", "Claim")" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Are you sure you want to reject this claim?');">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No claims found</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

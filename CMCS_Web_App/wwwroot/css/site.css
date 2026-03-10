@@ -1,0 +1,222 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: sticky;
+    min-height: 100%;
+    margin-bottom: 1px;
+}
+
+body {
+    margin-bottom: 60px;
+}
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #ebe4af;
+    margin: 0;
+    padding: 0;
+    color: black;
+}
+
+.table-header-custom {
+    background-color: #8B0000; /* dark green */
+    color: white;
+    text-align: center;
+}
+
+/* Container */
+.container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Navigation */
+nav {
+    background-color: black;
+    padding: 1rem;
+}
+
+    nav a {
+        color: black;
+        text-decoration: none;
+        margin-right: 1.5rem;
+        font-weight: 600;
+    }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+.navbar-nav form {
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important
+}
+
+.navbar-nav .btn-link{
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-nav .btn-link:hover{
+    color: #ffc107;
+}
+
+/* Buttons */
+/* Fix the logout form - override the white background */
+.navbar-nav form {
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Style the logout button */
+.logout-button {
+    background-color: #8B0000 !important;
+    border: none !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    margin: 0 !important;
+    font: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem; /* space between icon and text */
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+    .logout-button:hover {
+        background-color: #a00000 !important;
+        color: #ffc107 !important;
+        text-decoration: none !important;
+    }
+
+    .logout-button i {
+        font-size: 1.1rem;
+    }
+
+/* Ensure navbar items are properly aligned */
+.navbar-nav.d-flex.align-items-center {
+    gap: 1rem;
+}
+
+/* Remove any background from list items */
+.navbar-nav li {
+    background: transparent !important;
+}
+
+/* Style the username display */
+.navbar-nav .nav-link.text-white {
+    background: transparent !important;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+button:hover, .btn:hover {
+    background-color: black;
+}
+
+/* Form Styles */
+form {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 3px
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
+    width: 80%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+    }
+
+/* Body text */
+body {
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+    table th, table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+    }
+
+    table th {
+        background-color: #0893c3;
+        color: white;
+    }
+
+    table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+/* Footer */
+footer {
+    color: white;
+    text-align: center;
+    padding: 0rem 0;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    background-color: #000; /* Black background */
+    opacity: 0.5; /* 50% transparency */
+}
+
+    footer a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+        footer a:hover {
+            text-decoration: underline;
+        }

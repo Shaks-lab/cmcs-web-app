@@ -1,0 +1,11 @@
+
+MONTHLY CLAIMS REPORT - November 2025
+============================================
+Total Claims: 7
+Approved Claims: 3
+Pending Claims: 2
+Rejected Claims: 2
+Total Amount: R 4 653,00
+Average Claim Amount: R 1 551,00
+============================================
+Generated on: 2025-11-21 17:14:52

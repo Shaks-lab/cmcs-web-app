@@ -1,0 +1,20 @@
+
+============================================
+   MONTHLY CLAIMS REPORT - March 2026
+============================================
+
+Report Generated: 2026-03-10 16:04:41
+
+SUMMARY STATISTICS
+--------------------------------------------
+Total Claims Submitted: 1
+Approved Claims: 1
+Pending Claims: 0
+Rejected Claims: 0
+
+FINANCIAL SUMMARY
+--------------------------------------------
+Total Amount Approved: R 6 750,00
+Average Claim Amount: R 6 750,00
+
+============================================
